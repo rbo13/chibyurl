@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber"
 	"github.com/gofiber/fiber/middleware"
 	"github.com/gofiber/helmet"
+	"github.com/gofiber/limiter"
 	"github.com/gofiber/logger"
 	"github.com/joho/godotenv"
 )
@@ -26,6 +27,11 @@ func main() {
 		middleware.Recover(),
 		logger.New(),
 		helmet.New(),
+		// 5 requests per 15 seconds
+		limiter.New(limiter.Config{
+			Timeout: 15,
+			Max:     5,
+		}),
 	)
 
 	// serve static files
