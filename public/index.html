@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>chibyURL</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.3.5/dist/alpine.min.js" defer></script>
+  </head>
+
+  <body>
+    <section class="section" x-data="chiby()">
+      <div class="container">
+        <h3 class="title">
+          chibyURL, minifies your URL!
+        </h3>
+
+        <form @submit.prevent="minifyURL()">
+          <div class="field">
+            <label class="label" for="url">URL</label>
+            <div class="control">
+              <input
+                x-model="url"
+                id="url"
+                name="url"
+                class="input"
+                type="url"
+                placeholder="http://myawesomesite.com" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="alias">URL Alias</label>
+            <div class="control">
+              <input
+                x-model="alias"
+                id="alias"
+                name="alias"
+                class="input"
+                type="text"
+                placeholder="MyAwesomeURL" />
+            </div>
+          </div>
+
+          <div class="control">
+            <button type="submit" class="button is-success is-rounded is-outlined">chibify!</button>
+          </div>
+        </form>
+
+        <div class="container mt-4">
+          <p x-text="output"></p>
+        </div>
+
+      </div>
+    </section>
+
+    <script>
+      function chiby() {
+        return {
+          url: '',
+          alias: '',
+          output: '',
+          minifyURL() {
+            const url = this.url.trim()
+            const alias = this.alias.trim()
+            this.output = 'Hello World'
+            console.log(url, alias)
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
