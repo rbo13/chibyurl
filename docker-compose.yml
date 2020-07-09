@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - mongo
+    ports:
+      - 8080:8000 # host:container
+    volumes:
+      - .:/app
+    environment:
+      - PORT
+
+  mongo-express:
+    image: mongo-express
+    depends_on:
+      - mongo
+    ports:
+      - 1337:8081
+
+  mongo:
+    image: mongo:4
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
