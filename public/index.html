@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>chibyURL</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@creativebulma/bulma-tooltip@1.2.0/dist/bulma-tooltip.min.css" integrity="sha256-OdzWB7wl1AMkFaqhYBnoQJGUJMDAexXa44rXs/d2n4A=" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.3.5/dist/alpine.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
   </head>
@@ -26,12 +27,12 @@
                 name="url"
                 class="input"
                 type="url"
-                placeholder="http://myawesomesite.com" />
+                placeholder="https://myawesomesite.com" />
             </div>
           </div>
 
           <div class="field">
-            <label class="label" for="alias">URL Alias</label>
+            <label class="label" for="alias">URL Alias (optional)</label>
             <div class="control">
               <input
                 x-model="alias"
@@ -44,7 +45,7 @@
           </div>
 
           <div class="control">
-            <button type="submit" class="button is-success is-rounded is-outlined">chibify!</button>
+            <button type="submit" class="button is-success is-outlined">Create</button>
           </div>
         </form>
 
@@ -53,13 +54,16 @@
           class="box mt-4">
           <div class="field">
             <button
+              id="clipboard"
               x-on:click="clipboard"
               data-clipboard-action="copy"
-              id="clipboard"
-              class="button is-small is-pulled-right">Copy</button>
+              data-tooltip="Copy to Clipboard"
+              class="button is-small is-info is-outlined is-pulled-right has-tooltip-arrow">Copy</button>
           </div>
 
-          <p x-text="output">
+          <p
+            x-text="output"
+            class="is-size-5 has-text-weight-medium is-family-monospace">
           </p>
         </div>
 
@@ -101,10 +105,6 @@
               text: () => {
                 return this.output
               }
-            })
-
-            clipboard.on('success', (e) => {
-              console.log(e)
             })
 
             clipboard.on('error', (err) => {
