@@ -6,6 +6,7 @@
     <title>chibyURL</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.3.5/dist/alpine.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
   </head>
 
   <body>
@@ -38,7 +39,7 @@
                 name="alias"
                 class="input"
                 type="text"
-                placeholder="MyAwesomeURL" />
+                placeholder="MyAwesomeAlias" />
             </div>
           </div>
 
@@ -47,9 +48,21 @@
           </div>
         </form>
 
-        <div class="container mt-4">
-          <p x-text="output"></p>
+        <div
+          x-show="visible"
+          class="box mt-4">
+          <div class="field">
+            <button
+              x-on:click="clipboard"
+              data-clipboard-action="copy"
+              id="clipboard"
+              class="button is-small is-pulled-right">Copy</button>
+          </div>
+
+          <p x-text="output">
+          </p>
         </div>
+
 
       </div>
     </section>
@@ -60,13 +73,16 @@
           url: '',
           alias: '',
           output: '',
-          minifyURL() {
+          visible: false,
+          async minifyURL() {
             const url = this.url.trim()
             const alias = this.alias.trim()
+            this.visible = true
 
-            // const API_URL = 'http://localhost:8080'
-            const API_URL = 'https://chiby.herokuapp.com'
-            window.fetch(API_URL, {
+            const API_URL = 'http://localhost:8000'
+            // const API_URL = 'https://chiby.herokuapp.com'
+
+            const response = await window.fetch(API_URL, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json; charset=utf-8'
@@ -76,12 +92,24 @@
                 "url": url
               })
             })
-              .then(res => {
-                return res.json()
-              })
-              .then(data => {
-                this.output = `${API_URL}/${data.payload.alias}`
-              })
+
+            const data = await response.json()
+            this.output = `${API_URL}/${data.payload.alias}`
+          },
+          clipboard() {
+            const clipboard = new ClipboardJS('#clipboard', {
+              text: () => {
+                return this.output
+              }
+            })
+
+            clipboard.on('success', (e) => {
+              console.log(e)
+            })
+
+            clipboard.on('error', (err) => {
+              console.error(err)
+            })
           }
         }
       }
