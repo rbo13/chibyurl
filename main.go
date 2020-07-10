@@ -7,7 +7,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/gofiber/cors"
 	"github.com/gofiber/fiber"
 	"github.com/gofiber/fiber/middleware"
 	"github.com/gofiber/helmet"
@@ -46,7 +45,6 @@ func main() {
 
 	// middlewares
 	server.Use(
-		cors.New(),
 		middleware.Recover(),
 		logger.New(),
 		helmet.New(),
