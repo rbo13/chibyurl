@@ -29,9 +29,9 @@ func (u *URL) Generate() string {
 	seeder := int64(time.Now().UnixNano() * int64(len(words.Adjective)*len(words.Animal)*len(words.Verb)))
 	rand.Seed(seeder) // create seed value first
 
-	var randomAdjective = removeSpace(strings.Title(words.Adjective[rand.Intn(len(words.Adjective))]))
-	var randomAnimal = removeSpace(strings.Title(words.Animal[rand.Intn(len(words.Animal))]))
-	var randomVerb = removeSpace(strings.Title(words.Verb[rand.Intn(len(words.Verb))]))
+	randomAdjective := removeSpace(strings.Title(words.Adjective[rand.Intn(len(words.Adjective))]))
+	randomAnimal := removeSpace(strings.Title(words.Animal[rand.Intn(len(words.Animal))]))
+	randomVerb := removeSpace(strings.Title(words.Verb[rand.Intn(len(words.Verb))]))
 
 	return fmt.Sprintf("%s%s%s", randomAdjective, randomVerb, randomAnimal)
 }
