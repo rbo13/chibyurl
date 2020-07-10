@@ -12,6 +12,7 @@ import (
 	"github.com/gofiber/helmet"
 	"github.com/gofiber/limiter"
 	"github.com/gofiber/logger"
+	"github.com/joho/godotenv"
 	"github.com/rbo13/chibyurl/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -21,11 +22,15 @@ import (
 
 var collection *mongo.Collection
 
+var env = os.Getenv("ENV")
+
 func main() {
-	// if err := godotenv.Load(); err != nil {
-	// 	log.Fatalf("Environment File cannot be loaded: %v", err)
-	// 	return
-	// }
+	if env == "DEV" || env == "" {
+		if err := godotenv.Load(); err != nil {
+			log.Fatalf("Environment File cannot be loaded: %v", err)
+			return
+		}
+	}
 
 	var PORT = os.Getenv("PORT")
 
