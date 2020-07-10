@@ -3,6 +3,9 @@ chibyURL
 Installation:
 $ go mod download
 
+Create Config File:
+$ cp -a .env.example .env
+
 Developing:
 $ docker-compose up --build
 
