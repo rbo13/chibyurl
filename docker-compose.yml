@@ -10,7 +10,7 @@ services:
     ports:
       - 8080:8000 # host:container
     volumes:
-      - .:/app
+      - .:/build
     environment:
       - PORT
 

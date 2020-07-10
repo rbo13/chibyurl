@@ -1,1 +1,13 @@
-TinyURL
+chibyURL
+
+Installation:
+$ go mod download
+
+Developing:
+$ docker-compose up --build
+
+Running:
+$ docker-compose up
+
+MongoDB UI:
+$ http://localhost:1337

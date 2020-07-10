@@ -1,8 +1,11 @@
 package main
 
 import (
+	"context"
 	"log"
+	"net/http"
 	"os"
+	"time"
 
 	"github.com/gofiber/fiber"
 	"github.com/gofiber/fiber/middleware"
@@ -10,7 +13,14 @@ import (
 	"github.com/gofiber/limiter"
 	"github.com/gofiber/logger"
 	"github.com/joho/godotenv"
+	"github.com/rbo13/chibyurl/model"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
+
+var collection *mongo.Collection
 
 func main() {
 	if err := godotenv.Load(); err != nil {
@@ -20,8 +30,14 @@ func main() {
 
 	var PORT = os.Getenv("PORT")
 
-	server := fiber.New()
+	db := dbConnect("chiby")
+	if db == nil {
+		log.Fatalf("Cannot connect to database!")
+		return
+	}
+	collection = db.Collection("urls")
 
+	server := fiber.New()
 	// middlewares
 	server.Use(
 		middleware.Recover(),
@@ -37,5 +53,102 @@ func main() {
 	// serve static files
 	server.Static("/", "./public")
 
+	api := server.Group("/api")
+
+	api.Get("/", func(ctx *fiber.Ctx) {
+		urls := []model.URL{}
+		cursor, err := collection.Find(context.TODO(), bson.M{})
+		if err != nil {
+			ctx.Status(http.StatusNotFound).JSON(fiber.Map{
+				"success": false,
+				"code":    http.StatusNotFound,
+				"message": err.Error(),
+				"data":    nil,
+			})
+		}
+
+		for cursor.Next(context.TODO()) {
+			var url model.URL
+
+			if err := cursor.Decode(&url); err != nil {
+				ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
+					"success": false,
+					"code":    http.StatusBadRequest,
+					"message": err.Error(),
+					"data":    nil,
+				})
+				return
+			}
+			urls = append(urls, url)
+		}
+
+		ctx.Status(http.StatusOK).JSON(fiber.Map{
+			"success": true,
+			"code":    http.StatusOK,
+			"message": "URLS Retrieved",
+			"data":    urls,
+		})
+	})
+
+	api.Post("/", func(ctx *fiber.Ctx) {
+		url := new(model.URL)
+
+		if err := ctx.BodyParser(url); err != nil {
+			ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
+				"success": false,
+				"code":    http.StatusBadRequest,
+				"message": err.Error(),
+				"data":    nil,
+			})
+			return
+		}
+
+		result, err := collection.InsertOne(context.TODO(), url)
+		if err != nil {
+			ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
+				"success": false,
+				"code":    http.StatusBadRequest,
+				"message": err.Error(),
+				"data":    nil,
+			})
+		}
+
+		ctx.Status(http.StatusCreated).JSON(fiber.Map{
+			"success": true,
+			"code":    http.StatusCreated,
+			"message": "Success!",
+			"data":    result,
+		})
+	})
+
 	server.Listen(PORT)
+}
+
+func dbConnect(dbName string) *mongo.Database {
+	connString := os.Getenv("MONGO_URI")
+
+	clientOptions := options.Client().ApplyURI(connString)
+	client, err := mongo.NewClient(clientOptions)
+	if err != nil {
+		log.Fatalf("Cannot create MongoDB Client: %v", err)
+		return nil
+	}
+
+	//Set up a context required by mongo.Connect
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	//To close the connection at the end
+	defer cancel()
+
+	if err = client.Connect(ctx); err != nil {
+		return nil
+	}
+
+	err = client.Ping(context.Background(), readpref.Primary())
+	if err != nil {
+		log.Fatal("Couldn't connect to the database", err)
+		return nil
+	}
+
+	log.Print("\n\n Successfully Connected to Mongo Database \n\n")
+	return client.Database(dbName)
 }

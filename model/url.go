@@ -9,7 +9,7 @@ import (
 // URL represents a url to be
 // shortened.
 type URL struct {
-	ID        primitive.ObjectID `bson:"_id" json:"_id"`
+	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	Alias     string             `bson:"alias" json:"alias"`
 	URL       string             `bson:"url" json:"url"`
 	Click     int32              `bson:"click" json:"click"`
