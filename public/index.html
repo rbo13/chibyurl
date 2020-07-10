@@ -84,7 +84,6 @@
           async minifyURL() {
             const url = this.url.trim()
             const alias = this.alias.trim()
-            this.visible = true
 
             // const API_URL = 'http://localhost:8000'
             const API_URL = 'https://chiby.herokuapp.com'
@@ -100,8 +99,9 @@
               })
             })
 
-            const data = await response.json()
-            this.output = `${API_URL}/${data.payload.alias}`
+            const data = await response.json();
+            this.visible = true;
+            this.output = `${API_URL}/${data.payload.alias}`;
           },
           clipboard() {
             const clipboard = new ClipboardJS('#clipboard', {
