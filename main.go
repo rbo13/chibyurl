@@ -38,6 +38,7 @@ func main() {
 	collection = db.Collection("urls")
 
 	server := fiber.New()
+
 	// middlewares
 	server.Use(
 		middleware.Recover(),
@@ -53,9 +54,15 @@ func main() {
 	// serve static files
 	server.Static("/", "./public")
 
-	api := server.Group("/api")
+	server.Get("/generate", func(ctx *fiber.Ctx) {
+		url := new(model.URL)
 
-	api.Get("/", func(ctx *fiber.Ctx) {
+		ctx.Status(http.StatusOK).JSON(fiber.Map{
+			"data": url.Generate(),
+		})
+	})
+
+	server.Get("/", func(ctx *fiber.Ctx) {
 		urls := []model.URL{}
 		cursor, err := collection.Find(context.TODO(), bson.M{})
 		if err != nil {
@@ -90,7 +97,7 @@ func main() {
 		})
 	})
 
-	api.Post("/", func(ctx *fiber.Ctx) {
+	server.Post("/", func(ctx *fiber.Ctx) {
 		url := new(model.URL)
 
 		if err := ctx.BodyParser(url); err != nil {
@@ -103,6 +110,28 @@ func main() {
 			return
 		}
 
+		// check if alias is not blank, if blank create
+		// a default alias.
+		if url.Alias == "" {
+			url.Alias = url.Generate()
+		}
+
+		// create index
+		_, err := collection.Indexes().CreateOne(
+			context.Background(),
+			mongo.IndexModel{
+				Keys: bson.M{
+					"alias": 1,
+				},
+				Options: options.Index().SetUnique(true),
+			},
+		)
+
+		if err != nil {
+			log.Fatalf("Cannot create document index: %v", err)
+			return
+		}
+
 		result, err := collection.InsertOne(context.TODO(), url)
 		if err != nil {
 			ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
@@ -111,12 +140,14 @@ func main() {
 				"message": err.Error(),
 				"data":    nil,
 			})
+			return
 		}
 
 		ctx.Status(http.StatusCreated).JSON(fiber.Map{
 			"success": true,
 			"code":    http.StatusCreated,
 			"message": "Success!",
+			"payload": url,
 			"data":    result,
 		})
 	})
