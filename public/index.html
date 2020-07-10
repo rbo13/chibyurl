@@ -81,7 +81,6 @@
                 return res.json()
               })
               .then(data => {
-                console.log(data)
                 this.output = `${API_URL}/${data.payload.alias}`
               })
           }
