@@ -58,14 +58,6 @@ func main() {
 	// serve static files
 	server.Static("/", "./public")
 
-	server.Get("/generate", func(ctx *fiber.Ctx) {
-		url := new(model.URL)
-
-		ctx.Status(http.StatusOK).JSON(fiber.Map{
-			"data": url.Generate(),
-		})
-	})
-
 	server.Get("/", func(ctx *fiber.Ctx) {
 		urls := []model.URL{}
 		cursor, err := collection.Find(context.TODO(), bson.M{})
@@ -99,6 +91,47 @@ func main() {
 			"message": "URLS Retrieved",
 			"data":    urls,
 		})
+	})
+
+	server.Get("/:alias", func(ctx *fiber.Ctx) {
+		alias := ctx.Params("alias")
+
+		url := model.URL{}
+
+		filter := bson.M{
+			"alias": alias,
+		}
+
+		err := collection.FindOne(ctx.Context(), filter).Decode(&url)
+		if err != nil {
+			ctx.Status(http.StatusNotFound).JSON(fiber.Map{
+				"success": false,
+				"code":    http.StatusNotFound,
+				"message": err.Error(),
+				"data":    nil,
+			})
+			return
+		}
+
+		// update the click data
+		update := bson.M{
+			"$set": bson.M{
+				"click": url.Click + 1,
+			},
+		}
+
+		_, err = collection.UpdateOne(ctx.Context(), filter, update)
+		if err != nil {
+			ctx.Status(http.StatusNotFound).JSON(fiber.Map{
+				"success": false,
+				"code":    http.StatusNotFound,
+				"message": err.Error(),
+				"data":    nil,
+			})
+		}
+
+		// redirect to the actual link
+		ctx.Redirect(url.URL, http.StatusMovedPermanently)
 	})
 
 	server.Post("/", func(ctx *fiber.Ctx) {
