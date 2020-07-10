@@ -116,7 +116,8 @@ func main() {
 		// update the click data
 		update := bson.M{
 			"$set": bson.M{
-				"click": url.Click + 1,
+				"click":      url.Click + 1,
+				"updated_at": time.Now(),
 			},
 		}
 
