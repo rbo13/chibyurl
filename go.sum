@@ -29,6 +29,8 @@ github.com/gobuffalo/packd v0.1.0/go.mod h1:M2Juc+hhDXf/PnmBANFCqx4DM3wRbgDvnVWe
 github.com/gobuffalo/packr/v2 v2.0.9/go.mod h1:emmyGweYTm6Kdper+iywB6YK5YzuKchGtJQZ0Odn4pQ=
 github.com/gobuffalo/packr/v2 v2.2.0/go.mod h1:CaAwI0GPIAv+5wKLtv8Afwl+Cm78K/I/VCm/3ptBN+0=
 github.com/gobuffalo/syncx v0.0.0-20190224160051-33c29581e754/go.mod h1:HhnNqWY95UYwwW3uSASeV7vtgYkT2t16hJgV3AEPUpw=
+github.com/gofiber/cors v0.2.1 h1:aEPW5Orz0Nph71TFobSBDHtnkmqRbU1s7T67O9u4CYc=
+github.com/gofiber/cors v0.2.1/go.mod h1:DFPONAxVvfFEOMoBH4eqcHp6k0aDYY0FhQsSShAZou8=
 github.com/gofiber/fiber v1.12.1/go.mod h1:33AHuW8Sgre3E5tOFJJmBe24MXGNg8GnmcNiXEOFgTU=
 github.com/gofiber/fiber v1.12.4 h1:ZF4O4S/fcWzCTM0K9Qo/5RYqsEM1QMut21QVslhU/KE=
 github.com/gofiber/fiber v1.12.4/go.mod h1:e+Ur2pP2rb5xKtiHATgfQpSwBR0z9q8Mar9+XfYxpOY=

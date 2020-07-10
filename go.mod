@@ -3,6 +3,7 @@ module github.com/rbo13/chibyurl
 go 1.14
 
 require (
+	github.com/gofiber/cors v0.2.1
 	github.com/gofiber/fiber v1.12.4
 	github.com/gofiber/helmet v0.1.1
 	github.com/gofiber/limiter v0.1.1
