@@ -137,6 +137,7 @@ func main() {
 
 	server.Post("/", func(ctx *fiber.Ctx) {
 		url := new(model.URL)
+		url.CreatedAt = time.Now()
 
 		if err := ctx.BodyParser(url); err != nil {
 			ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
