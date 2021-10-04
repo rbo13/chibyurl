@@ -23,6 +23,8 @@ type URL struct {
 	UpdatedAt time.Time          `bson:"updated_at" json:"updated_at"`
 }
 
+type Urls []URL
+
 // Generate generates a new url alias
 // if the user does not provide the alias.
 func (u *URL) Generate() string {

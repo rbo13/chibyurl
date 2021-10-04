@@ -24,6 +24,8 @@ var collection *mongo.Collection
 
 var env = os.Getenv("ENV")
 
+const dbName = "chiby"
+
 func main() {
 	if env == "DEV" || env == "" {
 		if err := godotenv.Load(); err != nil {
@@ -34,7 +36,7 @@ func main() {
 
 	var PORT = os.Getenv("PORT")
 
-	db := dbConnect("chiby")
+	db := dbConnect(dbName)
 	if db == nil {
 		log.Fatalf("Cannot connect to database!")
 		return
@@ -59,7 +61,7 @@ func main() {
 	server.Static("/", "./public")
 
 	server.Get("/", func(ctx *fiber.Ctx) {
-		urls := []model.URL{}
+		urls := model.Urls{}
 		cursor, err := collection.Find(context.TODO(), bson.M{})
 		if err != nil {
 			ctx.Status(http.StatusNotFound).JSON(fiber.Map{
