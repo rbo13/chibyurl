@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"math/rand"
+	"net/url"
 	"strings"
 	"time"
 	"unicode"
@@ -35,7 +36,9 @@ func (u *URL) Generate() string {
 	randomAnimal := removeSpace(strings.Title(words.Animal[rand.Intn(len(words.Animal))]))
 	randomVerb := removeSpace(strings.Title(words.Verb[rand.Intn(len(words.Verb))]))
 
-	return fmt.Sprintf("%s%s%s", randomAdjective, randomVerb, randomAnimal)
+	urlUnsafe := fmt.Sprintf("%s%s%s", randomAdjective, randomVerb, randomAnimal)
+	urlSafe := url.QueryEscape(urlUnsafe)
+	return urlSafe
 }
 
 func removeSpace(str string) string {
