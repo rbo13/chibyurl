@@ -24,7 +24,12 @@ var collection *mongo.Collection
 
 var env = os.Getenv("ENV")
 
-const dbName = "chiby"
+const (
+	dbName  = "chiby"
+	colName = "urls"
+	timeout = 15 // in seconds
+	maxReq  = 5  // 5 requests per 15 seconds
+)
 
 func main() {
 	if env == "DEV" || env == "" {
@@ -41,7 +46,7 @@ func main() {
 		log.Fatalf("Cannot connect to database!")
 		return
 	}
-	collection = db.Collection("urls")
+	collection = db.Collection(colName)
 
 	server := fiber.New()
 
@@ -50,10 +55,9 @@ func main() {
 		middleware.Recover(),
 		logger.New(),
 		helmet.New(),
-		// 5 requests per 15 seconds
 		limiter.New(limiter.Config{
-			Timeout: 15,
-			Max:     5,
+			Timeout: timeout,
+			Max:     maxReq,
 		}),
 	)
 
